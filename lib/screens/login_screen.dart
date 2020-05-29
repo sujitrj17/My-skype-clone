@@ -24,11 +24,9 @@ class LoginScreenState extends State<LoginScreen> {
           Center(
             child: loginButton(),
           ),
-          isLoginPressed
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              : Container()
+          isLoginPressed ?
+          Center( child: CircularProgressIndicator(),)
+          : Container()
         ],
       ),
     );
@@ -43,7 +41,7 @@ class LoginScreenState extends State<LoginScreen> {
         child: Text(
           "LOGIN",
           style: TextStyle(
-              fontSize: 35, fontWeight: FontWeight.w900, letterSpacing: 1.2),
+              fontSize: 55, fontWeight: FontWeight.w900, letterSpacing: 1.2),
         ),
 //        onPressed: () => performLogin(),
         onPressed: (){Navigator.pushReplacement(context,
@@ -63,7 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     _repository.signIn().then((FirebaseUser user) {
-      print("something");
+      print("inside signIn process");
       if (user != null) {
         authenticateUser(user);
       } else {

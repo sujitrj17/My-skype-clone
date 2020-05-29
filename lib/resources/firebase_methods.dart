@@ -40,8 +40,8 @@ class FirebaseMethods {
         accessToken: _signInAuthentication.accessToken,
         idToken: _signInAuthentication.idToken);
 
-    FirebaseUser user =
-        (await _auth.signInWithCredential(credential)) as FirebaseUser;
+//    FirebaseUser user =(await _auth.signInWithCredential(credential)) as FirebaseUser;
+    FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
     return user;
   }
 
