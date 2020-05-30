@@ -43,40 +43,45 @@ class LoginScreenState extends State<LoginScreen> {
           style: TextStyle(
               fontSize: 55, fontWeight: FontWeight.w900, letterSpacing: 1.2),
         ),
-//        onPressed: () => performLogin(),
-        onPressed: (){Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-              return HomeScreen();
-            }));},
+        onPressed: () {performLogin();},
+//        onPressed: (){
+//          Navigator.pushReplacement(context,
+//            MaterialPageRoute(builder: (context) {
+//              return HomeScreen();
+//            }));},
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
+
   void performLogin() {
-    print("tring to perform login");
+    print("-------------------------------------tring to perform login");
+//    _repository.signOutofApp();
 
     setState(() {
       isLoginPressed = true;
     });
 
     _repository.signIn().then((FirebaseUser user) {
-      print("inside signIn process");
+      print("----------------------------------------signIn process completed. Now authenticating");
       if (user != null) {
         authenticateUser(user);
       } else {
-        print("There was an error");
+        print("----------------------------------------There was an error");
       }
     });
   }
 
   void authenticateUser(FirebaseUser user) {
+    print('----------------------------------------Inside authenticate User');
     _repository.authenticateUser(user).then((isNewUser) {
       setState(() {
         isLoginPressed = false;
       });
 
       if (isNewUser) {
+        print('----------------------------------------You are new User');
         _repository.addDataToDb(user).then((value) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
@@ -84,6 +89,7 @@ class LoginScreenState extends State<LoginScreen> {
               }));
         });
       } else {
+        print('----------------------------------------old User detected ');
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
               return HomeScreen();

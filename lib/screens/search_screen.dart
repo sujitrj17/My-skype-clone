@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:skype_clone/models/user.dart';
 import 'package:skype_clone/resources/firebase_repository.dart';
+import 'package:skype_clone/screens/chatscreens/chat_screen.dart';
+//import 'package:skype_clone/screens/chatscreens/chat_screen.dart';
 import 'package:skype_clone/util/universal_variables.dart';
 import 'package:skype_clone/widgets/custom_tile.dart';
 
@@ -13,7 +15,6 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   FirebaseRepository _repository = FirebaseRepository();
-//  FirebaseUser dummy = FirebaseUser();
 
   List<User> userList;
   String query = "";
@@ -21,21 +22,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _repository.fetchAllUserWithCurrentUSer().then((List<User> lst) => {
 
-          setState(() {
-            userList = lst;
-          })
+    _repository.getCurrentUser().then((FirebaseUser user) {
+      _repository.fetchAllUsers(user).then((List<User> list) {
+        setState(() {
+          userList = list;
         });
-//    _repository.getCurrentUser().then((FirebaseUser user) {
-//      _repository.fetchAllUsers(user).then((List<User> list) {
-//        setState(() {
-//          userList = list;
-//        });
-//      });
-//    });
+      });
+    });
   }
 
   searchAppBar(BuildContext context) {
@@ -56,7 +51,6 @@ class _SearchScreenState extends State<SearchScreen> {
             onChanged: (val) {
               setState(() {
                 query = val;
-
               });
             },
             cursorColor: UniversalVariables.blackColor,
@@ -89,28 +83,20 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   buildSuggestions(String query) {
-    print('query=> $query');
-//    userList.forEach((element) {
-//      String uid = element.uid;
-//      print('user => $uid');
-//    });
-    final List<User> suggestionList = query.isEmpty ? [] : userList.where((User user) {
+    final List<User> suggestionList = query.isEmpty
+        ? []
+        : userList.where((User user) {
+      String _getUsername = user.username.toLowerCase();
+      String _query = query.toLowerCase();
+      String _getName = user.name.toLowerCase();
+      bool matchesUsername = _getUsername.contains(_query);
+      bool matchesName = _getName.contains(_query);
 
-      String un =  user.username;
-      String n =  user.name;
-      print('received username-- $un');
-      print('received name-- $n');
-            String _getUsername = user.username.toLowerCase();
-            String _query = query.toLowerCase();
-            String _getName = user.name.toLowerCase();
-            bool matchesUsername = _getUsername.contains(_query);
-            bool matchesName = _getName.contains(_query);
+      return (matchesUsername || matchesName);
 
-            return (matchesUsername || matchesName);
-
-            // (User user) => (user.username.toLowerCase().contains(query.toLowerCase()) ||
-            //     (user.name.toLowerCase().contains(query.toLowerCase()))),
-          }).toList();
+      // (User user) => (user.username.toLowerCase().contains(query.toLowerCase()) ||
+      //     (user.name.toLowerCase().contains(query.toLowerCase()))),
+    }).toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
@@ -123,7 +109,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
         return CustomTile(
           mini: false,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatScreen(receiver: searchedUser,)));
+          },
           leading: CircleAvatar(
             backgroundImage: NetworkImage(searchedUser.profilePhoto),
             backgroundColor: Colors.grey,
@@ -156,35 +147,3 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
-
-//  return ListView.builder(
-//       itemCount: suggestionList.length,
-//       itemBuilder: ((context, index) {
-//         User searchedUser = User(
-//             uid: suggestionList[index].uid,
-//             profilePhoto: suggestionList[index].profilePhoto,
-//             name: suggestionList[index].name,
-//             username: suggestionList[index].username);
-
-//         return CustomTile(
-//           mini: false,
-//           onTap: () {;
-//           },
-//           leading: CircleAvatar(
-//             backgroundImage: NetworkImage(searchedUser.profilePhoto),
-//             backgroundColor: Colors.grey,
-//           ),
-//           title: Text(
-//             searchedUser.username,
-//             style: TextStyle(
-//               color: Colors.white,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           subtitle: Text(
-//             searchedUser.name,
-//             style: TextStyle(color: UniversalVariables.greyColor),
-//           ),
-//         );
-//       }),
-//     );

@@ -21,10 +21,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/login',
       title: "Skype",
+      theme: ThemeData(brightness: Brightness.dark),
       debugShowCheckedModeBanner: false,
       routes: {
+        '/login':(context)=> LoginScreen(),
         '/search_screen':(context)=> SearchScreen(),
       },
       home: FutureBuilder(

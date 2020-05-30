@@ -18,4 +18,6 @@ class FirebaseRepository {
       _firebaseMethods.fetchAllUsers(user);
 
   Future<List<User>> fetchAllUserWithCurrentUSer() =>  _firebaseMethods.getDummyUsers();
+
+  Future<void> signOutofApp()  => _firebaseMethods.signOut();
 }

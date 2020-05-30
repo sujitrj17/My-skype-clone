@@ -28,10 +28,12 @@ class FirebaseMethods {
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser currentUser;
     currentUser = await _auth.currentUser();
+    print('-----------------current user is -${currentUser.displayName} and email- ${currentUser.email}');
     return currentUser;
   }
 
   Future<FirebaseUser> signIn() async {
+    print('----------------------------------------Inside sign In process');
     GoogleSignInAccount _signInAccount = await _googleSignIn.signIn();
     GoogleSignInAuthentication _signInAuthentication =
         await _signInAccount.authentication;
@@ -39,9 +41,7 @@ class FirebaseMethods {
     final AuthCredential credential = GoogleAuthProvider.getCredential(
         accessToken: _signInAuthentication.accessToken,
         idToken: _signInAuthentication.idToken);
-
-//    FirebaseUser user =(await _auth.signInWithCredential(credential)) as FirebaseUser;
-    FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+        FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
     return user;
   }
 
@@ -58,6 +58,7 @@ class FirebaseMethods {
   }
 
   Future<void> addDataToDb(FirebaseUser currentUser) async {
+    print('------------------------------------------------adding user to database');
     String username = Utils.getUsername(currentUser.email);
 
     user = User(
@@ -74,6 +75,7 @@ class FirebaseMethods {
   }
 
   Future<void> signOut() async {
+    print('--------------logging out ---------------------');
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
     return await _auth.signOut();
@@ -82,12 +84,16 @@ class FirebaseMethods {
   Future<List<User>> fetchAllUsers(FirebaseUser currentUser) async {
     List<User> userList = List<User>();
 
-    QuerySnapshot querySnapshot = await firestore.collection("users").getDocuments();
+    QuerySnapshot querySnapshot =
+    await firestore.collection("users").getDocuments();
     for (var i = 0; i < querySnapshot.documents.length; i++) {
       if (querySnapshot.documents[i].documentID != currentUser.uid) {
         userList.add(User.fromMap(querySnapshot.documents[i].data));
       }
     }
+      for(var j=0; j<userList.length; j++){
+        print('this user is adding to list-${userList[j].email} | username: ${userList[j].username}| name: ${userList[j].name}');
+      };
     return userList;
   }
 }
