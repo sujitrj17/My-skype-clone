@@ -92,7 +92,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
             mini: false,
             onTap: () {},
             title: Text(
-              "The CS Guy",
+              "The Sumasoft Guy",
               style: TextStyle(
                   color: Colors.white, fontFamily: "Arial", fontSize: 19),
             ),

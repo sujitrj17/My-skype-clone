@@ -57,7 +57,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   void performLogin() {
     print("-------------------------------------tring to perform login");
-//    _repository.signOutofApp();
+    _repository.signOutofApp();
 
     setState(() {
       isLoginPressed = true;

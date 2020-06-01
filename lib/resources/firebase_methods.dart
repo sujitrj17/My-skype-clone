@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:skype_clone/constants/strings.dart';
+import 'package:skype_clone/models/message.dart';
 import 'package:skype_clone/models/user.dart';
 import 'package:skype_clone/util/utilities.dart';
 
@@ -12,7 +14,7 @@ class FirebaseMethods {
   Future<List<User>> getDummyUsers() async {
     List<User> userList = List<User>();
 
-    QuerySnapshot querySnapshot = await firestore.collection("users").getDocuments();
+    QuerySnapshot querySnapshot = await firestore.collection(USERS_COLLECTION).getDocuments();
     for (var i = 0; i < querySnapshot.documents.length; i++) {
         userList.add(User.fromMap(querySnapshot.documents[i].data));
         var x = User.fromMap(querySnapshot.documents[i].data).name;
@@ -47,8 +49,8 @@ class FirebaseMethods {
 
   Future<bool> authenticateUser(FirebaseUser user) async {
     QuerySnapshot result = await firestore
-        .collection("users")
-        .where("email", isEqualTo: user.email)
+        .collection(USERS_COLLECTION)
+        .where(EMAIL_FIELD, isEqualTo: user.email)
         .getDocuments();
 
     final List<DocumentSnapshot> docs = result.documents;
@@ -69,7 +71,7 @@ class FirebaseMethods {
         username: username);
 
     firestore
-        .collection("users")
+        .collection(USERS_COLLECTION)
         .document(currentUser.uid)
         .setData(user.toMap(user));
   }
@@ -85,7 +87,7 @@ class FirebaseMethods {
     List<User> userList = List<User>();
 
     QuerySnapshot querySnapshot =
-    await firestore.collection("users").getDocuments();
+    await firestore.collection(USERS_COLLECTION).getDocuments();
     for (var i = 0; i < querySnapshot.documents.length; i++) {
       if (querySnapshot.documents[i].documentID != currentUser.uid) {
         userList.add(User.fromMap(querySnapshot.documents[i].data));
@@ -95,5 +97,22 @@ class FirebaseMethods {
         print('this user is adding to list-${userList[j].email} | username: ${userList[j].username}| name: ${userList[j].name}');
       };
     return userList;
+  }
+
+  Future<void> addMessageToDb(
+      Message message, User sender, User receiver) async {
+    var map = message.toMap();
+
+    await firestore
+        .collection(MESSAGES_COLLECTION)
+        .document(message.senderId)
+        .collection(message.receiverId)
+        .add(map);
+
+    return await firestore
+        .collection(MESSAGES_COLLECTION)
+        .document(message.receiverId)
+        .collection(message.senderId)
+        .add(map);
   }
 }
